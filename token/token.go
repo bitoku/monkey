@@ -7,32 +7,37 @@ type Token struct {
 	Literal string
 }
 
-var keywords = map[string]Type {
-	"fn": FUNCTION,
-	"let": LET,
+var keywords = map[string]Type{
+	"fn":     FUNCTION,
+	"let":    LET,
+	"return": RETURN,
+	"true":   TRUE,
+	"false":  FALSE,
+	"if":     IF,
+	"else":   ELSE,
 }
 
 const (
 	ILLEGAL = "ILLEGAL"
-	EOF = "EOF"
+	EOF     = "EOF"
 
 	// Identifier + Literal
 	IDENT = "IDENT" // add, foobar, x, y, ...
-	INT = "INT" // 1, 2, ...
+	INT   = "INT"   // 1, 2, ...
 
 	// Operators
-	ASSIGN = "="
-	BANG = "!"
-	PLUS = "+"
-	MINUS = "-"
+	ASSIGN   = "="
+	BANG     = "!"
+	PLUS     = "+"
+	MINUS    = "-"
 	ASTERISK = "*"
-	SLASH = "/"
+	SLASH    = "/"
 
 	LT = "<"
 	GT = ">"
 
 	// Delimiters
-	COMMA = ","
+	COMMA     = ","
 	SEMICOLON = ";"
 
 	LPAREN = "("
@@ -42,7 +47,12 @@ const (
 
 	// Keywords
 	FUNCTION = "FUNCTION"
-	LET = "LET"
+	LET      = "LET"
+	IF       = "IF"
+	ELSE     = "ELSE"
+	RETURN   = "RETURN"
+	TRUE     = "TRUE"
+	FALSE    = "FALSE"
 )
 
 func LookupIdent(ident string) Type {
