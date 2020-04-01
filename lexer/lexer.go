@@ -5,10 +5,10 @@ import (
 )
 
 type Lexer struct {
-	input string
-	position int // current position in input (points to current character)
-	readPosition int // current reading position in input (after current character)
-	ch byte // current character under examination
+	input        string
+	position     int  // current position in input (points to current character)
+	readPosition int  // current reading position in input (after current character)
+	ch           byte // current character under examination
 }
 
 func New(input string) *Lexer {
@@ -53,6 +53,10 @@ func (l *Lexer) NextToken() token.Token {
 		tok = newToken(token.ASTERISK, l.ch)
 	case '/':
 		tok = newToken(token.SLASH, l.ch)
+	case '<':
+		tok = newToken(token.LT, l.ch)
+	case '>':
+		tok = newToken(token.GT, l.ch)
 	case '{':
 		tok = newToken(token.LBRACE, l.ch)
 	case '}':
