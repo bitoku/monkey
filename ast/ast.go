@@ -93,14 +93,14 @@ func (rs *ReturnStatement) String() string {
 
 type ExpressionStatement struct {
 	Token      token.Token
-	expression Expression
+	Expression Expression
 }
 
-func (es *ExpressionStatement) expressionNode()      {}
+func (es *ExpressionStatement) statementNode()       {}
 func (es *ExpressionStatement) TokenLiteral() string { return es.Token.Literal }
 func (es *ExpressionStatement) String() string {
-	if es.expression != nil {
-		return es.expression.String()
+	if es.Expression != nil {
+		return es.Expression.String()
 	}
 	return ""
 }
