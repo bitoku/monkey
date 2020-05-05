@@ -214,10 +214,10 @@ func TestParsingPrefixExpressions(t *testing.T) {
 	}
 }
 
-func testIntegerLiteral(t *testing.T, il ast.Expression, value int64) bool {
-	integer, ok := il.(*ast.IntegerLiteral)
+func testIntegerLiteral(t *testing.T, expression ast.Expression, value int64) bool {
+	integer, ok := expression.(*ast.IntegerLiteral)
 	if !ok {
-		t.Errorf("expression not *ast.IntegerLiteral. got=%T", integer)
+		t.Errorf("expression not *ast.IntegerLiteral. got=%T", expression)
 		return false
 	}
 	if integer.Value != value {
@@ -368,6 +368,8 @@ func testLiteralExpression(t *testing.T, expression ast.Expression, expected int
 		return testIntegerLiteral(t, expression, v)
 	case string:
 		return testIdentifier(t, expression, v)
+	case bool:
+		return testBoolean(t, expression, v)
 	}
 	t.Errorf("type of expression not handled. got=%T", expression)
 	return false
@@ -390,6 +392,50 @@ func testInfixExpression(t *testing.T, expression ast.Expression, left interface
 	}
 
 	if !testLiteralExpression(t, operatorExpression.Right, right) {
+		return false
+	}
+
+	return true
+}
+
+func TestBooleanExpression(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected bool
+	}{
+		{"true;", true},
+		{"false;", false},
+	}
+
+	for _, testCase := range tests {
+		l := lexer.New(testCase.input)
+		p := New(l)
+		program := p.ParseProgram()
+		checkParserErrors(t, p)
+
+		statement, ok := program.Statements[0].(*ast.ExpressionStatement)
+		if !ok {
+			t.Fatalf("program.Statements[0] is not ast.ExpressionStatement. got=%T", program.Statements[0])
+		}
+
+		if !testLiteralExpression(t, statement.Expression, testCase.expected) {
+			return
+		}
+	}
+}
+
+func testBoolean(t *testing.T, expression ast.Expression, value bool) bool {
+	boolean, ok := expression.(*ast.Boolean)
+	if !ok {
+		t.Errorf("expression not *ast.Boolean. got=%T", expression)
+		return false
+	}
+	if boolean.Value != value {
+		t.Errorf("literal.Value not %t. got=%t", value, boolean.Value)
+		return false
+	}
+	if boolean.TokenLiteral() != fmt.Sprintf("%t", value) {
+		t.Errorf("literal.TokenLiteral not %t. got=%s", value, boolean.TokenLiteral())
 		return false
 	}
 
