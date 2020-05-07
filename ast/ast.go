@@ -77,7 +77,7 @@ func (i *Identifier) String() string       { return i.Value }
 
 type ReturnStatement struct {
 	Token       token.Token
-	returnValue Expression
+	ReturnValue Expression
 }
 
 func (rs *ReturnStatement) statementNode()       {}
@@ -86,7 +86,7 @@ func (rs *ReturnStatement) String() string {
 	var out bytes.Buffer
 
 	out.WriteString(rs.TokenLiteral() + " ")
-	out.WriteString(rs.returnValue.String())
+	out.WriteString(rs.ReturnValue.String())
 	out.WriteString(";")
 
 	return out.String()
