@@ -117,7 +117,7 @@ func newToken(tokenType token.Type, ch byte) token.Token {
 func (l *Lexer) readIdentifier() string {
 	position := l.position
 	isFloat := false
-	for isLetter(l.ch) || (!isFloat && l.ch == '.') {
+	for isLetter(l.ch) || isDigit(l.ch) || (!isFloat && l.ch == '.') {
 		if l.ch == '.' {
 			isFloat = true
 		}
@@ -138,4 +138,8 @@ func (l *Lexer) skipWhitespace() {
 	for l.ch == ' ' || l.ch == '\t' || l.ch == '\n' || l.ch == '\r' {
 		l.readChar()
 	}
+}
+
+func (l *Lexer) Position() int {
+	return l.position
 }
