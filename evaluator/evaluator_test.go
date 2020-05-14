@@ -72,3 +72,33 @@ func testBooleanObject(t *testing.T, obj object.Object, expected bool) bool {
 	}
 	return true
 }
+
+func testObject(t *testing.T, obj object.Object, expected interface{}) bool {
+	switch v := expected.(type) {
+	case int64:
+		return testIntegerObject(t, obj, v)
+	case bool:
+		return testBooleanObject(t, obj, v)
+	}
+	t.Errorf("type of expected not handled. got=%T, (%+v)", expected, expected)
+	return false
+}
+
+func TestBangOperator(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected bool
+	}{
+		{"!true", false},
+		{"!false", true},
+		{"!5", false},
+		{"!!true", true},
+		{"!!false", false},
+		{"!!5", true},
+	}
+
+	for _, testCase := range tests {
+		evaluated := testEval(testCase.input)
+		testObject(t, evaluated, testCase.expected)
+	}
+}

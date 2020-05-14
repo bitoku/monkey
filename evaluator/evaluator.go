@@ -8,7 +8,7 @@ import (
 var (
 	NULL  = &object.Null{}
 	TRUE  = &object.Boolean{Value: true}
-	FALSE = &object.Boolean{Value: true}
+	FALSE = &object.Boolean{Value: false}
 )
 
 func Eval(node ast.Node) object.Object {
@@ -19,6 +19,9 @@ func Eval(node ast.Node) object.Object {
 		return nativeBoolToBooleanObject(node.Value)
 	case *ast.Program:
 		return evalStatements(node.Statements)
+	case *ast.PrefixExpression:
+		right := Eval(node.Right)
+		return evalPrefixExpression(node.Operator, right)
 	case *ast.ExpressionStatement:
 		return Eval(node.Expression)
 	}
@@ -38,6 +41,26 @@ func evalStatements(statements []ast.Statement) object.Object {
 
 func nativeBoolToBooleanObject(input bool) *object.Boolean {
 	if input {
+		return TRUE
+	}
+	return FALSE
+}
+
+func evalPrefixExpression(operator string, right object.Object) object.Object {
+	switch operator {
+	case "!":
+		return evalBangOperatorExpression(right)
+	}
+	return NULL
+}
+
+func evalBangOperatorExpression(right object.Object) object.Object {
+	switch right {
+	case TRUE:
+		return FALSE
+	case FALSE:
+		return TRUE
+	case NULL:
 		return TRUE
 	}
 	return FALSE
