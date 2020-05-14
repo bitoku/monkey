@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"io"
+	"monkey/evaluator"
 	"monkey/lexer"
 	"monkey/parser"
 	"os"
@@ -31,15 +32,18 @@ func Start(in io.Reader, out io.Writer) {
 			continue
 		}
 
-		if _, err := io.WriteString(out, program.String()); err != nil {
-			fmt.Print(err)
-			os.Exit(1)
-		}
-		if _, err := io.WriteString(out, "\n"); err != nil {
-			fmt.Print(err)
-			os.Exit(1)
-		}
+		evaluated := evaluator.Eval(program)
 
+		if evaluated != nil {
+			if _, err := io.WriteString(out, evaluated.Inspect()); err != nil {
+				fmt.Print(err)
+				os.Exit(1)
+			}
+			if _, err := io.WriteString(out, "\n"); err != nil {
+				fmt.Print(err)
+				os.Exit(1)
+			}
+		}
 	}
 }
 
