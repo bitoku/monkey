@@ -101,17 +101,6 @@ func testBooleanObject(t *testing.T, obj object.Object, expected bool) bool {
 	return true
 }
 
-func testObject(t *testing.T, obj object.Object, expected interface{}) bool {
-	switch v := expected.(type) {
-	case int64:
-		return testIntegerObject(t, obj, v)
-	case bool:
-		return testBooleanObject(t, obj, v)
-	}
-	t.Errorf("type of expected not handled. got=%T, (%+v)", expected, expected)
-	return false
-}
-
 func TestBangOperator(t *testing.T) {
 	tests := []struct {
 		input    string
@@ -127,6 +116,38 @@ func TestBangOperator(t *testing.T) {
 
 	for _, testCase := range tests {
 		evaluated := testEval(testCase.input)
-		testObject(t, evaluated, testCase.expected)
+		testBooleanObject(t, evaluated, testCase.expected)
 	}
+}
+
+func TestIfElseExpressions(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected interface{}
+	}{
+		{"if (true) { 10 }", 10},
+		{"if (false) { 10 }", nil},
+		{"if (1) { 10 }", 10},
+		{"if (1 < 2) { 10 }", 10},
+		{"if (1 > 2) { 10 }", nil},
+		{"if (1 > 2) { 10 } else { 20 }", 20},
+		{"if (1 < 2) { 10 } else { 20 }", 10},
+	}
+
+	for _, testCase := range tests {
+		evaluated := testEval(testCase.input)
+		integer, ok := testCase.expected.(int)
+		if ok {
+			testIntegerObject(t, evaluated, int64(integer))
+		} else {
+			testNullObject(t, evaluated)
+		}
+	}
+}
+
+func testNullObject(t *testing.T, obj object.Object) bool {
+	if obj != NULL {
+		t.Errorf("object is not NULL. got=%T (%+v)", obj, obj)
+	}
+	return true
 }
