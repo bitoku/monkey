@@ -289,6 +289,9 @@ func TestFunctionApplication(t *testing.T) {
 		{"let add = fn(x, y) { x + y; }; add(5, 5);", 10},
 		{"let add = fn(x, y) { x + y; }; add(5 + 5, add(5, 5));", 20},
 		{"fn(x) { x; }(5)", 5},
+		{"let Z = fn(f) { fn(x) { f(fn(y) { x(x)(y) }) }(fn(x) { f(fn(y) { x(x)(y) }) }) };" +
+			"let fact = fn(f) { fn(x) { if (x == 1) { 1; } else { x * f(x - 1); } } };" +
+			"Z(fact)(5);", 120}, // Z combinator test
 	}
 
 	for _, testCase := range tests {
