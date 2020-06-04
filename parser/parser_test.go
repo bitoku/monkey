@@ -383,6 +383,10 @@ func TestOperatorPrecedenceParsing(t *testing.T) {
 			"add(a + b + c * d / f + g)",
 			"add((((a+b)+((c*d)/f))+g))",
 		},
+		{
+			"add(a * b[2], b[1], 2 * [1, 2][1])",
+			"add((a*(b[2])), (b[1]), (2*([1, 2][1])))",
+		},
 	}
 
 	for _, testCase := range tests {
@@ -524,14 +528,14 @@ func TestIfExpression(t *testing.T) {
 	}
 
 	if len(expression.Consequence.Statements) != 1 {
-		t.Errorf("consequense is not 1 statements. got=%d\n", len(expression.Consequence.Statements))
+		t.Errorf("consequence is not 1 statements. got=%d\n", len(expression.Consequence.Statements))
 	}
 
-	consequense, ok := expression.Consequence.Statements[0].(*ast.ExpressionStatement)
+	consequence, ok := expression.Consequence.Statements[0].(*ast.ExpressionStatement)
 	if !ok {
 		t.Fatalf("Statements[0] is not ast.ExpressionStatement. got=%T", expression.Consequence.Statements[0])
 	}
-	if !testIdentifier(t, consequense.Expression, "x") {
+	if !testIdentifier(t, consequence.Expression, "x") {
 		return
 	}
 
@@ -567,14 +571,14 @@ func TestIfElseExpression(t *testing.T) {
 	}
 
 	if len(expression.Consequence.Statements) != 1 {
-		t.Errorf("consequense is not 1 statements. got=%d\n", len(expression.Consequence.Statements))
+		t.Errorf("consequence is not 1 statements. got=%d\n", len(expression.Consequence.Statements))
 	}
 
-	consequense, ok := expression.Consequence.Statements[0].(*ast.ExpressionStatement)
+	consequence, ok := expression.Consequence.Statements[0].(*ast.ExpressionStatement)
 	if !ok {
 		t.Fatalf("Statements[0] is not ast.ExpressionStatement. got=%T", expression.Consequence.Statements[0])
 	}
-	if !testIdentifier(t, consequense.Expression, "x") {
+	if !testIdentifier(t, consequence.Expression, "x") {
 		return
 	}
 
@@ -781,4 +785,27 @@ func TestParsingArrayLiterals(t *testing.T) {
 	testIntegerLiteral(t, array.Elements[0], 1)
 	testInfixExpression(t, array.Elements[1], 2, "*", 2)
 	testInfixExpression(t, array.Elements[2], 3, "+", 3)
+}
+
+func TestParsingIndexExpressions(t *testing.T) {
+	input := "myArray[1 + 1]"
+
+	l := lexer.New(input)
+	p := New(l)
+	program := p.ParseProgram()
+	checkParserErrors(t, p)
+
+	statement, ok := program.Statements[0].(*ast.ExpressionStatement)
+	indexExp, ok := statement.Expression.(*ast.IndexExpression)
+	if !ok {
+		t.Fatalf("expression not *ast.IndexExpression. got=%T", statement.Expression)
+	}
+
+	if !testIdentifier(t, indexExp.Left, "myArray") {
+		return
+	}
+
+	if !testInfixExpression(t, indexExp.Index, 1, "+", 1) {
+		return
+	}
 }
