@@ -356,6 +356,10 @@ func TestBuiltinFunctions(t *testing.T) {
 		{`len([1, 2, 3])`, 3},
 		{`len([])`, 0},
 		{`let a = [1, 2]; len(a);`, 2},
+		{`push([1, 2, 3], 4)[0]`, 1},
+		{`push([1, 2, 3], 4)[1]`, 2},
+		{`push([1, 2, 3], 4)[2]`, 3},
+		{`push([1, 2, 3], 4)[3]`, 4},
 	}
 
 	for _, testCase := range tests {
